@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="NWindPrism.Views.MainPage"
+             xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             Title="{Binding Title}"
+             x:Name="Page">
+
+    <ContentPage.Padding>
+        <OnPlatform x:TypeArguments="Thickness" iOS="0,20,0,0"></OnPlatform>
+    </ContentPage.Padding>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Add" Command="{Binding AddCommand}"></ToolbarItem>
+    </ContentPage.ToolbarItems>
+    <StackLayout>
+        <Entry Text="{Binding InputText,Mode=TwoWay}"></Entry>
+        <ListView ItemsSource="{Binding BatFamilyAlls}" VerticalOptions="FillAndExpand">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <ViewCell.ContextActions>
+                            <MenuItem Text="Delete" 
+                                      Command="{Binding BindingContext.DeleteCommand, Source={x:Reference Page}}"
+                                      CommandParameter="{Binding}"></MenuItem>
+                        </ViewCell.ContextActions>
+                        <Label Text="{Binding Nombre}"></Label>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+
+</ContentPage>
