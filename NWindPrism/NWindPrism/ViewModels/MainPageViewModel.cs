@@ -19,6 +19,7 @@ namespace NWindPrism.ViewModels
          }*/
         public DelegateCommand AddCommand { get; }
         public DelegateCommand<BatFamily>DeleteCommand { get; }
+        public DelegateCommand<BatFamily> UpdateCommand { get; }
         private IBatFamilyService BatItemService { get; }
         private IEnumerable<BatFamily> BatFamilyAll;
         private string inputText;
@@ -26,9 +27,44 @@ namespace NWindPrism.ViewModels
             :base(navigationService)
         {
             BatItemService = BatSericeParam;
+            _ItemSeleccionado = new BatFamily();
+            GetBatFamilies();
             this.AddCommand = new DelegateCommand(AddTodoItem, () => !string.IsNullOrEmpty(InputText)).ObservesProperty(()=>this.InputText);
             DeleteCommand = new DelegateCommand<BatFamily>(this.DeleteTodoItem);
+            UpdateCommand=new DelegateCommand<BatFamily>(UpdateTodoItem);
         }
+
+        private async void GetBatFamilies()
+        {
+            BatFamilyAlls = await BatItemService.GetAllAsync();
+        }
+
+        //private async void AddTodoItem()
+        //{
+        //    await BatItemService.GetAllAsync();
+        //}
+
+        private async void DeleteTodoItem(BatFamily TodoItem)
+        {
+            await BatItemService.DeleteAsync(TodoItem);
+            BatFamilyAlls = await BatItemService.GetAllAsync();
+        }
+
+        private async void UpdateTodoItem(BatFamily TodoItem)
+        {
+            TodoItem.Nombre = inputText;
+            InputText = "";
+            await BatItemService.UpdateAsync(TodoItem);
+            BatFamilyAlls = await BatItemService.GetAllAsync();
+        }
+
+        private async void AddTodoItem()
+        {
+            await BatItemService.InsertAsync(new BatFamily { Nombre = InputText });
+            InputText = "";
+            BatFamilyAlls = await BatItemService.GetAllAsync();
+        }
+
         public IEnumerable<BatFamily> BatFamilyAlls
         {
             get { return BatFamilyAll; }
@@ -42,24 +78,39 @@ namespace NWindPrism.ViewModels
                 this.SetProperty(ref this.inputText, value);
             }
         }
-        private void DeleteTodoItem(BatFamily BatParent)
+        //private void DeleteTodoItem(BatFamily BatParent)
+        //{
+        //    BatItemService.Delete(BatParent.Id);
+        //    BatFamilyAlls = BatItemService.GetAll();
+        //}
+        //private void AddTodoItem()
+        //{
+        //    BatItemService.Insert(new BatFamily { Nombre = InputText });
+        //    InputText = "";
+        //    BatFamilyAlls = BatItemService.GetAll();
+        //}
+        public async void OnNavigatedFrom(NavigationParameters parameters)
         {
-            BatItemService.Delete(BatParent.Id);
-            BatFamilyAlls = BatItemService.GetAll();
+            BatFamilyAlls = await BatItemService.GetAllAsync();
         }
-        private void AddTodoItem()
+        public async void OnNavigatedTo(NavigationParameters parameters)
         {
-            BatItemService.Insert(new BatFamily { Nombre = InputText });
-            InputText = "";
-            BatFamilyAlls = BatItemService.GetAll();
+            BatFamilyAlls = await BatItemService.GetAllAsync();
         }
-        public void OnNavigatedFrom(NavigationParameters parameters)
-        {
 
-        }
-        public void OnNavigatedTo(NavigationParameters parameters)
+        private BatFamily _ItemSeleccionado;
+        public BatFamily ItemSeleccionado
         {
-            BatFamilyAlls = BatItemService.GetAll();
+            get { return _ItemSeleccionado; }
+            set
+            {
+                SetProperty(ref _ItemSeleccionado, value);
+                if (_ItemSeleccionado!=null)
+                {
+                    InputText = _ItemSeleccionado.Nombre;
+                }
+            }
         }
+
     }
 }

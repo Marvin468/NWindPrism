@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using NWindPrism.Model;
 using SQLite;
 
@@ -9,38 +10,67 @@ namespace NWindPrism.Services
     public class BatFamilyService : IBatFamilyService
     {
         private ISQLiteConnectionProvider ConnectionProvider { get; }
-        private SQLiteConnection Connection { get; }
+        private SQLiteAsyncConnection Connection { get; }
 
         public BatFamilyService(ISQLiteConnectionProvider connectionProvider)
         {
             ConnectionProvider = connectionProvider;
             Connection = ConnectionProvider.GetConnection();
-            Connection.CreateTable<BatFamily>();
-
-        }
-        public void Delete(int id)
-        {
-            Connection.Delete<BatFamily>(id);
+            Connection.CreateTableAsync<BatFamily>();
         }
 
-        public IEnumerable<BatFamily> GetAll()
+        public async Task<IEnumerable<BatFamily>> GetAllAsync()
         {
-            return Connection.Table<BatFamily>().ToList();
+            await Connection.CreateTableAsync<BatFamily>();
+            return await Connection.Table<BatFamily>().ToListAsync();
         }
 
-        public BatFamily GetById(int id)
+        public async Task<BatFamily> GetByIdAsync(int id)
         {
-            return Connection.Table<BatFamily>().FirstOrDefault(x => x.Id == id);
+            await Connection.CreateTableAsync<BatFamily>();
+            return await Connection.Table<BatFamily>().Where(x => x.Id == id).FirstOrDefaultAsync();
         }
 
-        public void Insert(BatFamily todoItem)
+        public async Task UpdateAsync(BatFamily BatParent)
         {
-            Connection.Insert(todoItem);
+            await Connection.CreateTableAsync<BatFamily>();
+            await Connection.UpdateAsync(BatParent);
         }
 
-        public void Update(BatFamily todoItem)
+        public async Task InsertAsync(BatFamily BatParent)
         {
-            Connection.Update(todoItem);
+            await Connection.CreateTableAsync<BatFamily>();
+            await Connection.InsertAsync(BatParent);
         }
+
+        public async Task DeleteAsync(BatFamily id)
+        {
+            await Connection.CreateTableAsync<BatFamily>();
+            await Connection.DeleteAsync(id);
+        }
+        //public void Delete(int id)
+        //{
+        //    Connection.Delete<BatFamily>(id);
+        //}
+
+        //public IEnumerable<BatFamily> GetAll()
+        //{
+        //    return Connection.Table<BatFamily>().ToList();
+        //}
+
+        //public BatFamily GetById(int id)
+        //{
+        //    return Connection.Table<BatFamily>().FirstOrDefault(x => x.Id == id);
+        //}
+
+        //public void Insert(BatFamily todoItem)
+        //{
+        //    Connection.Insert(todoItem);
+        //}
+
+        //public void Update(BatFamily todoItem)
+        //{
+        //    Connection.Update(todoItem);
+        //}
     }
 }

@@ -17,13 +17,13 @@ namespace NWindPrism.Droid.Services
 {
     public class SQLiteConnectionProvider : ISQLiteConnectionProvider
     {
-        private SQLiteConnection Connection { get; set; }
-        public SQLiteConnection GetConnection()
+        private SQLiteAsyncConnection Connection { get; set; }
+        public SQLiteAsyncConnection GetConnection()
         {
             if (this.Connection != null) { return this.Connection; }
             var path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
             path = Path.Combine(path, "marvin2.db3");
-            return Connection = new SQLiteConnection(path);
+            return Connection = new SQLiteAsyncConnection(path);
         }
     }
 }

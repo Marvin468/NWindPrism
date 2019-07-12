@@ -7,6 +7,7 @@ namespace NWindPrism.Services
 {
     public interface ISQLiteConnectionProvider
     {
-        SQLiteConnection GetConnection();
+        //SQLiteConnection GetConnection();
+        SQLiteAsyncConnection GetConnection();
     }
 }
